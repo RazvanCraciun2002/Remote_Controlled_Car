@@ -1,0 +1,262 @@
+#include <AFMotor.h>
+unsigned long preMillis=0;
+int value=0;
+int buzzPin=13;
+int rLed=7;
+int lLed=2;
+int red=9;
+int blue=10;
+// int green=13;
+int LledState=LOW;
+int RledState=LOW;
+bool semnalstanga=false;
+bool semnaldreapta=false;
+bool avarii=false;
+AF_DCMotor motor1(1);
+AF_DCMotor motor2(2);
+AF_DCMotor motor3(3);
+AF_DCMotor motor4(4);
+//0-254 viteza
+int speed;
+void setup() {
+  Serial.begin(9600);
+  pinMode(buzzPin,OUTPUT);
+  pinMode(lLed,OUTPUT);
+  pinMode(rLed,OUTPUT);
+  pinMode(red,OUTPUT);
+  // pinMode(green,OUTPUT);
+  pinMode(blue,OUTPUT);
+}
+
+void loop() {
+  unsigned long ms=millis();
+  if(Serial.available() > 0)
+  {
+    value=Serial.read();
+    Serial.print("Valoarea:");
+    Serial.println(value);
+    
+    speed=255;
+    motor1.setSpeed(speed);
+    motor2.setSpeed(speed);
+    motor3.setSpeed(speed);
+    motor4.setSpeed(speed);
+  }
+    if(value==10)
+    {
+      semnalstanga=true;
+      Serial.print("Semnal:");
+      Serial.println(semnalstanga);
+    }
+    else semnalstanga=false;
+    if(value==16)
+    {
+      analogWrite(red,255);
+      analogWrite(blue,255);
+      // analogWrite(green,255);
+    }
+    if(value==17)
+    {
+      analogWrite(red,0);
+      analogWrite(blue,0);
+      // analogWrite(green,0);
+    }
+    if(value==18)
+    {
+      analogWrite(blue,0);
+    }
+    if(value==19)
+    {
+      analogWrite(blue,255);
+    }
+    if(value==22)
+    {
+      analogWrite(red,0);
+    }
+    if(value==23)
+    {
+      analogWrite(red,255);
+    }
+    if(value==12)
+    {
+      semnaldreapta=true;
+    }
+    else semnaldreapta=false;
+    // if(value==13)
+    // {
+    //   semnaldreapta=false;
+    // }
+    if(value==14)
+    {
+      avarii=true;
+    }
+    if(value==15)
+    {
+      avarii=false;
+    }
+    if(semnalstanga==false)
+    {
+      digitalWrite(lLed,LOW);
+    }
+    if(semnaldreapta==false)
+    {
+      digitalWrite(rLed,LOW);
+    }
+    if(avarii==false)
+    {
+      digitalWrite(lLed,LOW);
+      digitalWrite(rLed,LOW);
+    }
+    if( (ms-preMillis)>=500 && semnaldreapta==true)
+    {
+      preMillis=ms;
+      if(RledState==LOW)
+      {
+        RledState=HIGH;
+      }
+      else RledState=LOW;
+      digitalWrite(rLed,RledState);
+    }
+    if( (ms-preMillis)>=500 && semnalstanga==true)
+    {
+      preMillis=ms;
+      if(LledState==LOW)
+      {
+        LledState=HIGH;
+      }
+      else LledState=LOW;
+      digitalWrite(lLed,LledState);
+    }
+    
+    if( (ms-preMillis)>=500 && avarii==true)
+    {
+      preMillis=ms;
+      if(LledState==LOW && RledState==LOW)
+      {
+        LledState=HIGH;
+        RledState=HIGH;
+      }
+      else 
+      {
+        LledState=LOW;
+        RledState=LOW;
+      }
+      digitalWrite(lLed,LledState);
+      digitalWrite(rLed,RledState);
+    }
+    if(value==20)
+    {
+      digitalWrite(buzzPin,HIGH);
+      digitalWrite(rLed,LOW);
+    }
+    if(value==6){
+      motor1.setSpeed(speed);
+      motor1.run(FORWARD);
+      motor2.setSpeed(speed);
+      motor2.run(BACKWARD);
+      motor3.setSpeed(speed);
+      motor3.run(FORWARD);
+      motor4.setSpeed(speed);
+      motor4.run(BACKWARD);
+      digitalWrite(rLed,LOW);
+    }
+    if(value==0)
+    {
+      motor1.run(RELEASE);
+      motor2.run(RELEASE);
+      motor3.run(RELEASE);
+      motor4.run(RELEASE);
+      digitalWrite(buzzPin,LOW);
+      digitalWrite(rLed,LOW);
+    }
+    if(value==5)
+    {
+    motor1.setSpeed(speed);
+    motor1.run(BACKWARD);
+    motor2.setSpeed(speed);
+    motor2.run(FORWARD);
+    motor3.setSpeed(speed);
+    motor3.run(BACKWARD);
+    motor4.setSpeed(speed);
+    motor4.run(FORWARD);
+    digitalWrite(buzzPin,LOW);
+    digitalWrite(rLed,LOW);
+    }
+    if(value==8)
+    {
+      motor1.setSpeed(speed);
+      motor1.run(BACKWARD);
+      motor2.setSpeed(speed);
+      motor2.run(FORWARD);
+      motor3.setSpeed(speed);
+      motor3.run(FORWARD);
+      motor4.setSpeed(speed);
+      motor4.run(BACKWARD);
+      digitalWrite(rLed,LOW);
+    }
+    if(value==7)
+    {
+      motor1.setSpeed(speed);
+      motor1.run(FORWARD);
+      motor2.setSpeed(speed);
+      motor2.run(BACKWARD);
+      motor3.setSpeed(speed);
+      motor3.run(BACKWARD);
+      motor4.setSpeed(speed);
+      motor4.run(FORWARD);
+      digitalWrite(buzzPin,LOW);
+      digitalWrite(rLed,LOW);
+    }
+    if(value==1)
+    {
+      motor1.setSpeed(speed);
+      motor1.run(BACKWARD);
+      motor2.setSpeed(speed);
+      motor2.run(FORWARD);
+      motor3.setSpeed(speed/3);
+      motor3.run(BACKWARD);
+      motor4.setSpeed(speed/3);
+      motor4.run(FORWARD);
+      // digitalWrite(buzzPin,LOW);
+      // digitalWrite(rLed,LOW);
+    }
+    if(value==3)
+    {
+      motor1.setSpeed(speed);
+      motor1.run(FORWARD);
+      motor2.setSpeed(speed);
+      motor2.run(BACKWARD);
+      motor3.setSpeed(speed/3);
+      motor3.run(FORWARD);
+      motor4.setSpeed(speed/3);
+      motor4.run(BACKWARD);
+      digitalWrite(rLed,LOW);
+    }
+    if(value==4)
+    {
+      motor1.setSpeed(speed/3);
+      motor1.run(FORWARD);
+      motor2.setSpeed(speed/3);
+      motor2.run(BACKWARD);
+      motor3.setSpeed(speed);
+      motor3.run(FORWARD);
+      motor4.setSpeed(speed);
+      motor4.run(BACKWARD);
+      digitalWrite(rLed,LOW);
+    }
+    if(value==2)
+    {
+      motor1.setSpeed(speed/3);
+      motor1.run(BACKWARD);
+      motor2.setSpeed(speed/3);
+      motor2.run(FORWARD);
+      motor3.setSpeed(speed);
+      motor3.run(BACKWARD);
+      motor4.setSpeed(speed);
+      motor4.run(FORWARD);
+      digitalWrite(buzzPin,LOW);
+      digitalWrite(rLed,LOW);
+    }
+  
+  // Serial.println(ms);
+}
